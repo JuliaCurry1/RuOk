@@ -24,7 +24,6 @@ pseed.wide <- pseed2%>%
 
 ## 2-4: creating a custom function
 calculate_sem <- function(data) {
-  # Calculate the mean and standard deviation
   mean_value <- mean(data)
   sd_value <- sd(data)
   sem <- sd_value / sqrt(length(data))
