@@ -24,9 +24,7 @@ pseed.wide <- pseed2%>%
 
 ## 2-4: creating a custom function
 calculate_sem <- function(data) {
-  mean_value <- mean(data)
-  sd_value <- sd(data)
-  sem <- sd_value / sqrt(length(data))
+  sem <- sd(data, na.rm = TRUE) / sqrt(length(data))
   return(sem)
 }
 
