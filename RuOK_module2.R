@@ -28,14 +28,12 @@ calculate_sem <- function(data) {
   return(sem)
 }
 
-amp.sum.mean <- pseed.wide%>%
-  group_by(fish,bl.s)%>%
-  summarize(amp.sum.mean=mean(amp.sum,na.rm=TRUE))%>%
-  print()
-
-amp.sum.se <- pseed.wide%>%
-  group_by(fish,bl.s)%>%
-  summarize(amp.sum.se=calculate_sem(amp.sum))%>%
+pseed.sum.max <- pseed.wide %>%
+  group_by(speed, fish) %>%
+  summarise(
+    amp.sum.mean = mean(amp.sum, na.rm = TRUE),
+    amp.sum.se = calculate_sem(amp.sum)
+  ) %>%
   print()
 
 pseed.sum.max <- left_join(amp.sum.mean, amp.sum.se, by=c("fish", "bl.s"))
