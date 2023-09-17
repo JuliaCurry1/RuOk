@@ -1,8 +1,10 @@
 ####### PROJECT REPORT
 ## set working directory and load tidyverse and features
-setwd("/Users/elizabethbreitmeyer/Desktop/Experimental Methods in Organismal Bio/RuOK/RuOK")
+setwd("/Users/blakeprall/Documents/BIOL3140/RuOK")
+
 library(tidyverse)
 library(features)
+library(ggplot2)
 
 ## 1
 pseed <- read_csv("pseed.fin.amps.csv")
@@ -14,14 +16,6 @@ pseed2 <- pseed %>%
   left_join(pseed.bl,by="fish")%>%
   mutate(bl.s=cm.s/bl)
 
-find.peaks <- function(x,y,mult=100){
-  f <- fget(features(x = x,y=y*mult))[2:3]%>%
-    as_tibble()%>%
-    filter(curvature<0)%>%
-    mutate(peaks=round(crit.pts,0))
-  return(f$peaks)
-}
-
 pseed.wide <- pseed2%>%
   select(-amp)%>%
   pivot_wider(names_from = fin,values_from = amp.bl)%>%
@@ -29,6 +23,14 @@ pseed.wide <- pseed2%>%
   print()
 
 ## 2-4: creating a custom function
+calculate_sem <- function(data) {
+  # Calculate the mean and standard deviation
+  mean_value <- mean(data)
+  sd_value <- sd(data)
+  sem <- sd_value / sqrt(length(data))
+  return(sem)
+}
+
 amp.sum.mean <- pseed.wide%>%
   group_by(fish,bl.s)%>%
   summarize(amp.sum.mean=mean(amp.sum,na.rm=TRUE))%>%
@@ -36,14 +38,13 @@ amp.sum.mean <- pseed.wide%>%
 
 amp.sum.se <- pseed.wide%>%
   group_by(fish,bl.s)%>%
-  summarize(amp.sum.se=sd(amp.sum, na.rm=TRUE)/sqrt(n()))%>%
+  summarize(amp.sum.se=calculate_sem(amp.sum))%>%
   print()
 
 pseed.sum.max <- left_join(amp.sum.mean, amp.sum.se, by=c("fish", "bl.s"))
 # here is the tibble pseed.sum.max with columns amp.sum.mean and amp.sum.se
 
 ## 5: plotting
-library(ggplot2)
 ggplot(pseed.sum.max, aes(x=bl.s, y=amp.sum.mean, color=fish)) +
   geom_point() +
   geom_errorbar(aes(ymin=amp.sum.mean-amp.sum.se, ymax=amp.sum.mean+amp.sum.se, group=fish), width=0.1, position=position_dodge(0.1)) +
@@ -62,5 +63,4 @@ ggplot(pseed.sum.max2, aes(x=amp.sum.mean, y=met.rate, color=fish)) +
   geom_line(position=position_dodge(0.1)) +
   geom_point(position=position_dodge(0.1)) +
   theme_minimal()
-
 
