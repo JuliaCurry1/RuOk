@@ -56,8 +56,6 @@ pseed.met.rate <- read_csv("pseed.met.rate.csv")
 pseed.sum.max2 <- left_join(pseed.sum.max, pseed.met.rate, by=c("fish", "bl.s"))
 
 ggplot(pseed.sum.max2, aes(x=amp.sum.mean, y=met.rate, color=fish)) +
-  geom_point() +
-  geom_line(position=position_dodge(0.1)) +
+  geom_point(position=position_dodge(0.1)) +
   geom_point(position=position_dodge(0.1)) +
   theme_minimal()
-
