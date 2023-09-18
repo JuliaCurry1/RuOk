@@ -36,6 +36,17 @@ pseed.sum.max <- pseed.wide %>%
   ) %>%
   print()
 
+amp.sum.mean <- pseed.wide%>%
+  group_by(fish,bl.s)%>%
+  summarize(amp.sum.mean=mean(amp.sum,na.rm=TRUE))%>%
+  print()
+
+
+amp.sum.se <- pseed.wide%>%
+  group_by(fish,bl.s)%>%
+  summarize(amp.sum.se=sd(amp.sum, na.rm=TRUE)/sqrt(n()))%>%
+  print()
+
 pseed.sum.max <- left_join(amp.sum.mean, amp.sum.se, by=c("fish", "bl.s"))
 # here is the tibble pseed.sum.max with columns amp.sum.mean and amp.sum.se
 
@@ -51,8 +62,8 @@ ggplot(pseed.sum.max, aes(x=bl.s, y=amp.sum.mean, color=fish)) +
 ## 6 and 7
 pseed.met.rate <- read_csv("pseed.met.rate.csv")
 
-pseed.sum.max2 <- left_join(pseed.sum.max, pseed.met.rate, by=c("fish", "bl.s"))
+pseed.sum.max <- left_join(pseed.sum.max, pseed.met.rate, by=c("fish", "bl.s"))
 
-ggplot(pseed.sum.max2, aes(x=amp.sum.mean, y=met.rate, color=fish)) +
+ggplot(pseed.sum.max, aes(x=amp.sum.mean, y=met.rate, color=fish)) +
   geom_point(position=position_dodge(0.1)) +
   theme_minimal()
